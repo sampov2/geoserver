@@ -102,11 +102,11 @@ public class WfsExceptionHandler extends OWS10ServiceExceptionHandler {
             s.append(tab + "<ServiceException");
 
             if ((e.getCode() != null) && !e.getCode().equals("")) {
-                s.append(" code=\"" + e.getCode() + "\"");
+                s.append(" code=\"" + ResponseUtils.encodeXML(e.getCode()) + "\"");
             }
 
             if ((e.getLocator() != null) && !e.getLocator().equals("")) {
-                s.append(" locator=\"" + e.getLocator() + "\"");
+                s.append(" locator=\"" + ResponseUtils.encodeXML(e.getLocator()) + "\"");
             }
 
             s.append(">");
