@@ -338,8 +338,8 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      * @return The element part of the response.
      */
     private static String printElement(FeatureTypeInfo type) {
-        return "\n  <xs:element name=\"" + type.getName() + "\" type=\""
-        + type.getNamespace().getPrefix() + ":" + type.getName() + "_Type"
+        return "\n  <xs:element name=\"" + ResponseUtils.encodeXML(type.getName()) + "\" type=\""
+        + ResponseUtils.encodeXML(type.getNamespace().getPrefix() + ":" + type.getName() + "_Type")
         + "\" substitutionGroup=\"gml:_Feature\"/>";
     }
 
