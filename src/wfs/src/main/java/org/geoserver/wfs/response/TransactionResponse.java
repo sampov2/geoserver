@@ -123,7 +123,7 @@ public class TransactionResponse extends WFSResponse {
                     writer.write("<wfs:InsertResult");
 
                     if (insertedFeature.getHandle() != null) {
-                        writer.write(" handle=\"" + insertedFeature.getHandle() + "\"");
+                        writer.write(" handle=\"" + ResponseUtils.encodeXML(insertedFeature.getHandle()) + "\"");
                     }
 
                     writer.write(">");
@@ -144,7 +144,7 @@ public class TransactionResponse extends WFSResponse {
         writer.write(indent + "<wfs:TransactionResult");
 
         if (result.getHandle() != null) {
-            writer.write(" handle=\"" + result.getHandle() + "\"");
+            writer.write(" handle=\"" + ResponseUtils.encodeXML(result.getHandle()) + "\"");
         }
 
         writer.write(">");
