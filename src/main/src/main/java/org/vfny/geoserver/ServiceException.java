@@ -278,11 +278,11 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
         returnXml.append(indent + "<ServiceException");
 
         if (!isEmpty(getCode())) {
-            returnXml.append(" code=\"" + getCode() + "\"");
+            returnXml.append(" code=\"" + ResponseUtils.encodeXML(getCode()) + "\"");
         }
 
         if (!isEmpty(this.locator)) {
-            returnXml.append(" locator=\"" + this.locator + "\"");
+            returnXml.append(" locator=\"" + ResponseUtils.encodeXML(this.locator) + "\"");
         }
 
         returnXml.append(">\n" + indent + indent);
