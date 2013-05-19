@@ -251,7 +251,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         }
 
         // root element
-        sb.append("<ServiceExceptionReport version=\"" + version.toString() + "\" ");
+        sb.append("<ServiceExceptionReport version=\"" + ResponseUtils.encodeXML(version.toString()) + "\" ");
 
         // xml schema location
         if ((schemaLocation != null) && (dtdLocation == null)) {
@@ -271,12 +271,12 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
         // exception code
         if ((exception.getCode() != null) && !exception.getCode().equals("")) {
-            sb.append(" code=\"" + exception.getCode() + "\"");
+            sb.append(" code=\"" + ResponseUtils.encodeXML(exception.getCode()) + "\"");
         }
 
         // exception locator
         if ((exception.getLocator() != null) && !exception.getLocator().equals("")) {
-            sb.append(" locator=\"" + exception.getLocator() + "\"");
+            sb.append(" locator=\"" + ResponseUtils.encodeXML(exception.getLocator()) + "\"");
         }
 
         sb.append(">");
@@ -320,12 +320,12 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         StringBuffer sb = new StringBuffer();
         // exception code and locator
         if ((exception.getCode() != null) && !exception.getCode().equals("")) {
-            sb.append("code=\"" + exception.getCode() + "\"");
+            sb.append("code=\"" + ResponseUtils.encodeXML(exception.getCode()) + "\"");
         }
 
         // exception locator
         if ((exception.getLocator() != null) && !exception.getLocator().equals("")) {
-            sb.append(" locator=\"" + exception.getLocator() + "\"");
+            sb.append(" locator=\"" + ResponseUtils.encodeXML(exception.getLocator()) + "\"");
         }
 
         // message
