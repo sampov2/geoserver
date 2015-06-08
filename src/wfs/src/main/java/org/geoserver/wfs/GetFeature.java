@@ -174,7 +174,7 @@ public class GetFeature {
     // Visibility constraints lax and re-assignable to help unit tests
     static Set<QName> calculateSizeBannedForFeatures;
     static {
-    	String resourceName = "org.geoserver.wfs.GetFeature_calculateSizeBannedForFeatures.txt";
+    	String resourceName = "/GetFeature_calculateSizeBannedForFeatures.txt";
     	Set<QName> tmp = readBannedFeatureTypeNames(resourceName);
     	calculateSizeBannedForFeatures = Collections.unmodifiableSet(tmp);
     }
