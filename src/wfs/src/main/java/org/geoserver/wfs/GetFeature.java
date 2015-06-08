@@ -534,7 +534,7 @@ public class GetFeature {
                 // Check if requesting count is banned for any of the type names in the query
                 if (calculateSize) {
                 	LOGGER.fine("Determining if we're allowed to calculate the number of total responses for this query");
-                	for (QName name : request.getTypeNames()) {
+                	for (QName name : query.getTypeNames()) {
                 		if (testIfCalculateSizeIsBanned(name)) {
                 			LOGGER.finer("Calculating the number of features is banned for type "+name+". calculateSize => false");
                 			calculateSize = false;
