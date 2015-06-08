@@ -1,0 +1,7 @@
+
+  
+http://nls.fi/test/namespace ! fooType
+
+hello, this row is supposed to be ignored
+asIsThis
+  

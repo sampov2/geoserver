@@ -7,15 +7,24 @@ package org.geoserver.wfs;
 
 import static org.geoserver.ows.util.ResponseUtils.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -160,6 +169,14 @@ public class GetFeature {
 
         //we only support simple filters, and any of them And'ed together.
         joinFilterCapabilities.addType(And.class);
+    }
+    
+    // Visibility constraints lax and re-assignable to help unit tests
+    static Set<QName> calculateSizeBannedForFeatures;
+    static {
+    	String resourceName = "org.geoserver.wfs.GetFeature_calculateSizeBannedForFeatures.txt";
+    	Set<QName> tmp = readBannedFeatureTypeNames(resourceName);
+    	calculateSizeBannedForFeatures = Collections.unmodifiableSet(tmp);
     }
 
     /** The catalog */
@@ -514,6 +531,21 @@ public class GetFeature {
                     calculateSize = offset > 0 && i < queries.size() - 1; 
                 }
 
+                // Check if requesting count is banned for any of the type names in the query
+                if (calculateSize) {
+                	LOGGER.fine("Determining if we're allowed to calculate the number of total responses for this query");
+                	for (QName name : request.getTypeNames()) {
+                		if (testIfCalculateSizeIsBanned(name)) {
+                			LOGGER.finer("Calculating the number of features is banned for type "+name+". calculateSize => false");
+                			calculateSize = false;
+                			break;
+                		}
+                	}
+                	if (calculateSize) {
+                		LOGGER.finer("Calculating the number of features is not banned for any of the types in the request. calculateSize => true");
+                	}
+                }
+                
                 int size = 0;
                 if (calculateSize) {
                     size = features.size();
@@ -667,7 +699,13 @@ public class GetFeature {
         return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId);
     }
 
-    protected void processStoredQueries(GetFeatureRequest request) {
+    static boolean testIfCalculateSizeIsBanned(QName name) {
+    	LOGGER.finest("Testing if calculating number of features is banned for featureType "+name);
+
+    	return calculateSizeBannedForFeatures.contains(name);
+	}
+
+	protected void processStoredQueries(GetFeatureRequest request) {
         List queries = request.getAdaptedQueries();
         for (int i = 0; i < queries.size(); i++) {
             Object obj = queries.get(i);
@@ -1307,4 +1345,52 @@ O:      for (String propName : query.getPropertyNames()) {
         
         return properties;
     }
+    
+	static Set<QName> readBannedFeatureTypeNames(String resourceName) {
+		Set<QName> tmp = new HashSet<QName>();
+		Pattern p = Pattern.compile("\\s*([^!]*[^\\s])\\s*!\\s*(.*[^\\s])\\s*");
+    	BufferedReader br = null;
+    	try {
+    		InputStream is = GetFeature.class.getResourceAsStream(resourceName);
+    		if (is == null) {
+    			LOGGER.info("resource file missing: "+resourceName);
+    			return tmp;
+    		}
+    		br = new BufferedReader(new InputStreamReader(is));
+    		
+    		String line;
+    		int rowNumber = 0;
+    		while ((line = br.readLine()) != null) {
+    			rowNumber++;
+    			
+    			if (line.trim().length() == 0) {
+    				continue;
+    			}
+    			
+    			Matcher m = p.matcher(line);
+    			if (!m.matches()) {
+    				LOGGER.warning("Unable to parse row #"+rowNumber+" ('"+line+"')");
+    				continue;
+    			}
+    			
+    			String namespace = m.group(1);
+    			String localPart = m.group(2);
+    			QName name = new QName(namespace, localPart);
+    			LOGGER.info("Calculating number of all results banned for type "+name);
+    			tmp.add(name);
+    		}
+    		
+    	} catch(Exception e) {
+    		LOGGER.log(Level.SEVERE, "Problem reading "+resourceName, e);
+    	} finally {
+    		if (br != null) {
+    			try {
+    				br.close();
+    			} catch(IOException ie) {
+    				LOGGER.log(Level.SEVERE, "Unable to close "+resourceName, ie);
+    			}
+    		}
+    	}
+		return tmp;
+	}
 }
