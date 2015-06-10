@@ -699,7 +699,7 @@ public class GetFeature {
         return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId);
     }
 
-    static boolean testIfCalculateSizeIsBanned(QName name) {
+    public static boolean testIfCalculateSizeIsBanned(QName name) {
     	LOGGER.finest("Testing if calculating number of features is banned for featureType "+name);
 
     	return calculateSizeBannedForFeatures.contains(name);
