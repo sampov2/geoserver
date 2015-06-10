@@ -32,6 +32,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.GetFeature;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -406,6 +407,12 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         int idx = 0;
         for (QueryType query :  (EList<QueryType>) request.getQuery()) {
             QName typeName = (QName) query.getTypeName().get(0);
+            
+            if (GetFeature.testIfCalculateSizeIsBanned(typeName)) {
+            	LOGGER.fine("Skipping counting responses for featureType "+typeName);
+            	continue;
+            }
+            
             FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
                     typeName.getLocalPart());
 
